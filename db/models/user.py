@@ -19,4 +19,4 @@ class User(Base):
     learning_config: Mapped["LearningConfig"] = relationship(back_populates="user", uselist=False)       # type: ignore
     my_words: Mapped[list["MyWords"]] = relationship(back_populates="user", uselist=True)                # type: ignore
     learnt_words: Mapped[list["LearntWord"]] = relationship(back_populates="user", uselist=True)         # type: ignore
-    repeated_word: Mapped[list["RepeatWord"]] = relationship(back_populates="word", uselist=True)        # type: ignore
+    repeated_word: Mapped[list["RepeatWord"]] = relationship(back_populates="user", uselist=True)        # type: ignore
