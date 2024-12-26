@@ -1,32 +1,78 @@
 
 from fastapi import APIRouter, Depends, Form
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from schemas.user_schema import UserSchema
-from schemas.token_schema import TokenInfo
-from exceptions.auth_exception import UserUnauthorized
-import auth_utils
+from core.schemas.user_schema import UserSchema, CreateUser, CreateUserDB
+from core.schemas.token_schema import TokenInfo
+from core.exceptions.auth_exception import UserUnauthorized
+from .auth_utils import validate_password, encode_jwt, hash_password
+from db.crud.user import get_user_by_email, create_user
+from db.models.user import User
+from db.database import db_manager
 
-router = APIRouter(prefix="/auth", tags=["JWT"])
+auth_router = APIRouter(prefix="/auth", tags=["JWT"])
 
 
-def validate_auth_user(
+async def validate_auth_user(
+    session: AsyncSession = Depends(db_manager.session_getter),
     email: str = Form(),
     password: str = Form()
-):
-    pass
+) -> User:
+    if not (user := await get_user_by_email(session, email)):
+        raise UserUnauthorized
+    
+    if validate_password(
+        password=password,
+        hashed_pwd=user.hash_password
+    ):
+        return user
+    raise UserUnauthorized
 
-@router.post("/login/", response_model=TokenInfo)
-def login(
+
+@auth_router.post("/login/", response_model=TokenInfo)
+async def login(
     user: UserSchema = Depends(validate_auth_user)
 ):
     jwt_payload = {
         "sub": user.email,
         "username": user.username if user.username else "no_username",
     }
-    token = auth_utils.encode_jwt(
+    token = encode_jwt(
         payload=jwt_payload
     )
     return TokenInfo(
         access_token=token,
         token_type="Bearer"
     )
+
+
+@auth_router.post("/register/", response_model=TokenInfo)
+async def register(
+    user: CreateUser,
+    session: AsyncSession = Depends(db_manager.session_getter)
+):
+    hashed_pwd = hash_password(user.hash_password)
+    # try:
+    user = await create_user(
+        session=session,
+        user_create=CreateUserDB(
+            username=user.username,
+            email=user.email,
+            hash_password=hashed_pwd
+        )
+    )
+    jwt_payload = {
+        "sub": user.email,
+        "username": user.username if user.username else "no_username",
+    }
+    token = encode_jwt(
+        payload=jwt_payload
+    )
+    return TokenInfo(
+        access_token=token,
+        token_type="Bearer"
+    )
+
+    # except Exception as error:
+    #     #TODO Здесь будет лог с инфой об ошибке
+    #     print(error)
