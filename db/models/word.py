@@ -19,4 +19,4 @@ class Word(Base):
 
     topic: Mapped["Topic"] = relationship(back_populates="word", uselist=False)                         # type: ignore
     learnt_words: Mapped[list["LearntWord"]] = relationship(back_populates="word", uselist=True)        # type: ignore
-    repeated_word: Mapped[list["RepeatWord"]] = relationship(back_populates="word", uselist=True)        # type: ignore
+    repeated_word: Mapped[list["RepeatWord"]] = relationship(back_populates="word", uselist=True)        # type: ignore 
