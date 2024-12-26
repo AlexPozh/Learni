@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 import uvicorn
 
 from db.database import db_manager
@@ -17,6 +18,7 @@ async def lifespan(app: FastAPI):
 
 
 main_app = FastAPI(
+    default_response_class=ORJSONResponse,
     lifespan=lifespan
 )
 
