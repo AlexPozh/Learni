@@ -15,6 +15,6 @@ class LearntWord(Base):
     word_id: Mapped[int] = mapped_column(ForeignKey("words.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    user: Mapped["User"] = relationship(back_populates="learnt_word", uselist=False)    # type: ignore
-    word: Mapped["Word"] = relationship(back_populates="learnt_word", uselist=False)    # type: ignore
+    user: Mapped["User"] = relationship(back_populates="learnt_words", uselist=False)    # type: ignore
+    word: Mapped["Word"] = relationship(back_populates="learnt_words", uselist=False)    # type: ignore
     
