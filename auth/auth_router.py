@@ -15,10 +15,10 @@ auth_router = APIRouter(prefix="/auth", tags=["JWT"])
 
 async def validate_auth_user(
     session: AsyncSession = Depends(db_manager.session_getter),
-    email: str = Form(),
+    username: str = Form(),
     password: str = Form()
 ) -> User:
-    if not (user := await get_user_by_email(session, email)):
+    if not (user := await get_user_by_email(session, username)):
         raise UserUnauthorized
     
     if validate_password(
