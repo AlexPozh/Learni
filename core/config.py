@@ -7,6 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # /home/alex/Рабочий стол/Learni_app/Learni
 BASE_DIR = Path(__file__).parent.parent
 
+class LoggingSettings(BaseModel):
+    path: Path = BASE_DIR / "logging_config.yaml"
+    encoding: str = "utf-8"
+    mode: str = "r"
+
 
 class AuthJWT(BaseModel):
     private_key_path: Path = BASE_DIR / "auth" / "certs" / "private.pem"
@@ -47,5 +52,6 @@ class Settings(BaseSettings):
     db: DatabaseSettings
     api: ApiSettings
     auth_jwt: AuthJWT = AuthJWT()
+    log: LoggingSettings = LoggingSettings()
 
 settings = Settings()
