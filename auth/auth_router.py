@@ -1,3 +1,4 @@
+import logging
 
 from fastapi import APIRouter, Depends, Form
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,8 @@ from .auth_utils import validate_password, encode_jwt, hash_password
 from db.crud.user import get_user_by_email, create_user
 from db.models.user import User
 from db.database import db_manager
+
+logger = logging.getLogger("development")
 
 auth_router = APIRouter(prefix="/auth", tags=["JWT"])
 
@@ -52,27 +55,26 @@ async def register(
     session: AsyncSession = Depends(db_manager.session_getter)
 ):
     hashed_pwd = hash_password(user.hash_password)
-    # try:
-    user = await create_user(
-        session=session,
-        user_create=CreateUserDB(
-            username=user.username,
-            email=user.email,
-            hash_password=hashed_pwd
+    try:
+        user = await create_user(
+            session=session,
+            user_create=CreateUserDB(
+                username=user.username,
+                email=user.email,
+                hash_password=hashed_pwd
+            )
         )
-    )
-    jwt_payload = {
-        "sub": user.email,
-        "username": user.username if user.username else "no_username",
-    }
-    token = encode_jwt(
-        payload=jwt_payload
-    )
-    return TokenInfo(
-        access_token=token,
-        token_type="Bearer"
-    )
+        jwt_payload = {
+            "sub": user.email,
+            "username": user.username if user.username else "no_username",
+        }
+        token = encode_jwt(
+            payload=jwt_payload
+        )
+        return TokenInfo(
+            access_token=token,
+            token_type="Bearer"
+        )
 
-    # except Exception as error:
-    #     #TODO Здесь будет лог с инфой об ошибке
-    #     print(error)
+    except Exception as error:
+        logger.exception("%r", error)
