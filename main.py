@@ -1,13 +1,25 @@
 from contextlib import asynccontextmanager
+import logging
+import logging.config
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 import uvicorn
+import yaml
 
 from db.database import db_manager
 from auth.auth_router import auth_router
 from api.profile.user_profile import user_profile
 from core.config import settings
+
+
+with open(settings.log.path, settings.log.mode, encoding=settings.log.encoding) as file:
+    config = yaml.safe_load(file.read())
+
+logging.config.dictConfig(
+    config=config
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
