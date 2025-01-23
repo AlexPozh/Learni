@@ -78,7 +78,7 @@ class VocabularyParser:
             count_words = len(li_tags)
             for number, data in enumerate(li_tags, start=1):
                 try:
-                    if 1500 <= number <= count_words:
+                    if 1 <= number <= count_words:
                         self.eng_words.append(
                             CreateEngWordDB(
                                 word=f"{data.find_element(By.TAG_NAME, self.WORD_TAG).text.strip()}",
