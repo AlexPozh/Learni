@@ -12,7 +12,7 @@ class LearntWord(Base):
     started_at: Mapped[date] = mapped_column(nullable=False, server_default=func.now())
     next_review_at: Mapped[date] = mapped_column(Date(), nullable=False, server_default=text("NOW() + interval '10 days'"))
 
-    word_id: Mapped[int] = mapped_column(ForeignKey("words.id"))
+    word_id: Mapped[int] = mapped_column(ForeignKey("ru_learn.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     user: Mapped["User"] = relationship(back_populates="learnt_words", uselist=False)    # type: ignore

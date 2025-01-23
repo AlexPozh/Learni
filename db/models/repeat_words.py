@@ -14,7 +14,7 @@ class RepeatWord(Base):
     next_review_at: Mapped[date] = mapped_column(Date(), nullable=False, server_default=func.now())
     interval_days: Mapped[RepeatIntervalEnum] = mapped_column(Enum(RepeatIntervalEnum), nullable=False)
 
-    word_id: Mapped[int] = mapped_column(ForeignKey("words.id"))
+    word_id: Mapped[int] = mapped_column(ForeignKey("ru_learn.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     user: Mapped["User"] = relationship(back_populates="repeated_word", uselist=False)    # type: ignore
