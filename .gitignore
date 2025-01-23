@@ -6,6 +6,9 @@ __pycache__/
 # certificates folder
 certs/
 
+# chrome driver for selenium
+driver/
+
 # C extensions
 *.so
 
