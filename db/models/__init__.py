@@ -7,7 +7,8 @@ __all__ = (
     "Word",
     "LearntWord",
     "RepeatWord",
-    "UserTopic"
+    "UserTopic",
+    "EngWord"
 )
 
 from .base import Base
@@ -19,3 +20,4 @@ from .word import Word
 from .learnt_words import LearntWord
 from .repeat_words import RepeatWord
 from .user_topic import UserTopic
+from .eng_word import EngWord
