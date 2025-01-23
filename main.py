@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import logging
 import logging.config
+import asyncio
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -11,7 +12,7 @@ from db.database import db_manager
 from auth.auth_router import auth_router
 from api.profile.user_profile import user_profile
 from core.config import settings
-
+from services.parsing import parser
 
 with open(settings.log.path, settings.log.mode, encoding=settings.log.encoding) as file:
     config = yaml.safe_load(file.read())
@@ -44,6 +45,9 @@ def hello():
         "message": "Hello!"
     }
 
+# Only for parsing
+# async def main():
+#     await parser.parse()
 
 if __name__ == "__main__":
     uvicorn.run(
@@ -52,3 +56,6 @@ if __name__ == "__main__":
         port=int(settings.api.port),
         reload=True,
     )
+
+    # Only for parsing
+    # asyncio.run(main())
