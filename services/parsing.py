@@ -103,8 +103,4 @@ class VocabularyParser:
         logger.info("Start inserting data to db...")
         await self.__add_to_db()
 
-
-    async def load_mp3(self):
-        pass
-
 parser = VocabularyParser()
