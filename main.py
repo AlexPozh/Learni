@@ -13,6 +13,7 @@ from auth.auth_router import auth_router
 from api.profile.user_profile import user_profile
 from core.config import settings
 from services.parsing import parser
+from services.load_pronounce import load_pron
 
 with open(settings.log.path, settings.log.mode, encoding=settings.log.encoding) as file:
     config = yaml.safe_load(file.read())
@@ -45,9 +46,10 @@ def hello():
         "message": "Hello!"
     }
 
-# Only for parsing
+# Only for parsing words / pronounce
 # async def main():
-#     await parser.parse()
+#     await load_pron.get_url_links()
+#     await load_pron.load_pronounce_files()
 
 if __name__ == "__main__":
     uvicorn.run(
