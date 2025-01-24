@@ -9,6 +9,9 @@ certs/
 # chrome driver for selenium
 driver/
 
+# .mp3 files with pronunciation
+pron_files/
+
 # C extensions
 *.so
 
