@@ -4,7 +4,7 @@ import time
 import requests
 
 from db.database import db_manager
-from db.crud.word import get_url_links
+from db.crud.word import get_words
 
 logger = logging.getLogger("development")
 
@@ -22,7 +22,7 @@ class LoadPronounce:
     async def get_url_links(self) -> list[tuple[str, str]]:
         session_gen = db_manager.session_getter()
         session = await anext(session_gen)
-        for row in await get_url_links(session=session):    # ADD A LIMIT HERE
+        for row in await get_words(session=session):    # ADD A LIMIT HERE
             prons = row.file_us_link, row.file_uk_link
             self.PRON_LINKS.append(prons)
         return self.PRON_LINKS
