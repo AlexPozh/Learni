@@ -17,5 +17,44 @@ services:
       timeout: 10s
       retries: 5
 
+  redis:
+    iamge: redis:7
+    container_name: redis_container
+    restart: always
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+
+  celery_worker:
+    build: .
+    restart: always
+    container_name: celery_worker_container
+    command: bash -c "celery -A tasks.celery_app worker --loglevel=info"
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    image: mher/flower
+    container_name: flower_container
+    command: bash -c "flower --broker=redis://redis:6379/0"
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      
+  learni_app:
+    build: .
+    container_name: learni_app_container
+    command: bash -c "alembic upgrade head && python main.py"
+    depends_on:
+      - redis
+      - postgres
+      - celery_worker
+
 volumes:
   postgres_data:
