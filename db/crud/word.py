@@ -21,6 +21,8 @@ async def create_word(
         return word
     except Exception:
         logger.exception("Something went wrong")
+    finally:
+        await session.aclose()
 
 
 async def create_multiple_words(
@@ -31,13 +33,15 @@ async def create_multiple_words(
         words = [EngWord(**word_scheme.model_dump()) for word_scheme in words_scheme]
         session.add_all(words)
         await session.commit()
-        logger.info("Word added successfully")
+        logger.debug("Word added successfully")
 
     except Exception:
         logger.exception("Something went wrong")
+    finally:
+        await session.aclose()
 
 
-async def get_words(
+async def get_words_filter(
     session: AsyncSession,
     id: int | None = None,
     word: str | None = None, 
@@ -50,8 +54,10 @@ async def get_words(
         match filter_raw:
             case int(id), _, _, _:
                 stmt = select(EngWord.id, EngWord.word, EngWord.word_level, EngWord.part_speech).where(EngWord.id == id)
+            
             case _, str(word), _, _:
                 stmt = select(EngWord.id, EngWord.word, EngWord.word_level, EngWord.part_speech).where(EngWord.word == word).limit(limit)
+            
             case _, _, str(word_level), str(part_speech):
                 stmt = select(EngWord.id, EngWord.word, EngWord.word_level, EngWord.part_speech).where(
                     and_(
@@ -59,12 +65,15 @@ async def get_words(
                         EngWord.part_speech == part_speech
                         )
                     ).limit(limit)
+            
             case _, _, str(word_level), _:
                 stmt = select(EngWord.id, EngWord.word, EngWord.word_level, EngWord.part_speech).where(EngWord.word_level == word_level).limit(limit)
+            
             case _, _, _, str(part_speech):
                 stmt = select(EngWord.id, EngWord.word, EngWord.word_level, EngWord.part_speech).where(EngWord.part_speech == part_speech).limit(limit)
+            
             case _:
-                raise ValueError("Function didnt recieve at least one parameter")
+                stmt = select(EngWord).limit(limit)
 
         result = await session.execute(stmt)
         rows = result.all()
@@ -72,15 +81,23 @@ async def get_words(
 
     except Exception:
         logger.exception("Something went wrong")
+    
+    finally:
+        await session.aclose()
 
-async def get_url_links(
+
+async def get_words(
     session: AsyncSession,
-    limit: int = 10
-):
+    limit: int = 10,
+    offset: int = 0
+) -> list[GetEngWordDB]:
     try:
-        stmt = select(EngWord).limit(limit)
+        stmt = select(EngWord).limit(limit).offset(offset=offset)
         result = await session.execute(stmt)
         return result.scalars().all()
 
     except Exception:
         logger.exception("Something went wrong")
+
+    finally:
+        await session.aclose()
