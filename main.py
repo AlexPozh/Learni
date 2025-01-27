@@ -14,6 +14,7 @@ from api.profile.user_profile import user_profile
 from core.config import settings
 from services.parsing import parser
 from services.load_pronounce import load_pron
+from services.generate_translation import process_translation
 
 with open(settings.log.path, settings.log.mode, encoding=settings.log.encoding) as file:
     config = yaml.safe_load(file.read())
@@ -47,17 +48,18 @@ def hello():
     }
 
 # Only for parsing words / pronounce
-# async def main():
-#     await load_pron.get_url_links()
-#     await load_pron.load_pronounce_files()
-
+async def main():
+    # await load_pron.get_url_links()
+    # await load_pron.load_pronounce_files()
+    await process_translation()
+    
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:main_app",
-        host=settings.api.host,
-        port=int(settings.api.port),
-        reload=True,
-    )
+    # uvicorn.run(
+    #     "main:main_app",
+    #     host=settings.api.host,
+    #     port=int(settings.api.port),
+    #     reload=True,
+    # )
 
     # Only for parsing
-    # asyncio.run(main())
+    asyncio.run(main())
