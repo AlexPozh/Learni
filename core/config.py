@@ -1,11 +1,24 @@
 from pathlib import Path
 
-from pydantic import BaseModel
-from pydantic import PostgresDsn
+from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# /home/alex/Рабочий стол/Learni_app/Learni
 BASE_DIR = Path(__file__).parent.parent
+
+
+class RedisSettings(BaseModel):
+    host: str
+    port: int
+    expire_time: int
+
+class EmailConfirmCodeSettings(BaseModel):
+    from_email: str
+    hostname: str
+    port: int
+    rand_code: int
+    app_password: str
+    use_tls: bool = True
+
 
 class LoggingSettings(BaseModel):
     path: Path = BASE_DIR / "logging_config.yaml"
@@ -43,7 +56,7 @@ class DatabaseSettings(BaseModel):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='/home/alex/Рабочий стол/Learni_app/Learni/.env', 
+        env_file='../.env', 
         env_file_encoding='utf-8',
         case_sensitive=False,
         env_nested_delimiter="__",
@@ -51,6 +64,8 @@ class Settings(BaseSettings):
     )
     db: DatabaseSettings
     api: ApiSettings
+    email_conf: EmailConfirmCodeSettings
+    redis: RedisSettings
     auth_jwt: AuthJWT = AuthJWT()
     log: LoggingSettings = LoggingSettings()
 
