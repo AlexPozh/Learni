@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+
+{% block title %} Learni {% endblock %}
+
+{% block content %}
+<div class="main-wrapper d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="content-container position-relative"></div>
+        <div id="language-container" class="container active">
+            <div class="text-center">
+                <!-- Заголовок -->
+                <h5 class="fw-bold">Выберите уровень слов для изучения👨‍🏫</h5>
+
+                <!-- Первое поле -->
+                <div class="level-box-1" data-level="begginer">
+                    <div class="fw-bold">Начальный</div>
+                    <div class="level-subtext">(A1-A2)</div>
+                </div>
+
+                <!-- Второе поле -->
+                <div class="level-box-2" data-level="intermediate">
+                    <div class="fw-bold">Средний</div>
+                    <div class="level-subtext">(B1-B2)</div>
+                </div>
+
+                <!-- Третье поле -->
+                <div class="level-box-3" data-level="advanced">
+                    <div class="fw-bold">Продвинутый</div>
+                    <div class="level-subtext">(C1-C2)</div>
+                </div>
+
+                <!-- Подпись внизу -->
+                <p class="text-muted mt-3">В настройках можно поменять уровень слов</p>
+            </div>
+        </div>
+
+        <div id="words-container" class="container">
+            <div class="text-center">
+                <h5 class="fw-bold">Кол-во слов для изучения каждый день🗓️</h5>
+
+                <div class="word-box" data-words="5">
+                    <div class="fw-bold">5</div>
+                    <div class="number-subtext">150 слов в месяц</div>
+                </div>
+
+                <div class="word-box" data-words="10">
+                    <div class="fw-bold">10</div>
+                    <div class="number-subtext">300 слов в месяц</div>
+                </div>
+
+                <div class="word-box" data-words="15">
+                    <div class="fw-bold">15</div>
+                    <div class="number-subtext">450 слов в месяц</div>
+                </div>
+
+                <div class="word-box" data-words="20">
+                    <div class="fw-bold">20</div>
+                    <div class="number-subtext">600 слов в месяц</div>
+                </div>
+
+                <div class="word-box" data-words="25">
+                    <div class="fw-bold">25</div>
+                    <div class="number-subtext">750 слов в месяц</div>
+                </div>
+
+                <p class="text-muted mt-3">Вы можете поменять кол-во изучаемых слов в настройках</p>
+                <button class="btn btn-primary mt-3" id="confirm-settings">Подтвердить</button>
+            </div>
+        </div>
+
+        <!-- Стрелки -->
+        <div class="arrow left" id="left-arrow">←</div>
+        <div class="arrow right" id="right-arrow">→</div>
+    </div>
+</div>
+
+<style>
+    .level-box-1, 
+    .level-box-2, 
+    .level-box-3,
+    .word-box {
+        border: 1px solid #ccc; 
+        border-radius: 10px; 
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 15px;
+        transition: background-color 0.3s, color 0.3s;
+        cursor: pointer;
+    }
+
+    .word-box:hover,
+    .word-box.selected {
+        background-color: rgb(53, 53, 197);
+        color: white;
+    }
+
+    .word-box:hover .number-subtext,
+    .word-box.selected .number-subtext{
+        color: rgb(242, 241, 241);;
+    }
+
+    .level-box-1:hover,
+    .level-box-1.selected {
+        background-color: #24930e; 
+        color: white; 
+    }
+
+    .level-box-2:hover,
+    .level-box-2.selected {
+        background-color: #ea7527; 
+        color: white; 
+    }
+
+    .level-box-3:hover,
+    .level-box-3.selected {
+        background-color: #c11b1b;
+        color: white; 
+    }
+
+    .level-box-1:hover .level-subtext,
+    .level-box-2:hover .level-subtext,
+    .level-box-3:hover .level-subtext,
+    .level-box-1.selected .level-subtext,
+    .level-box-2.selected .level-subtext,
+    .level-box-3.selected .level-subtext {
+        color: rgb(242, 241, 241);
+    }
+
+    /* Стили для подзаголовков (A1-A2, B1-B2, C1-C2) */
+    .level-subtext .number-subtext {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 5px;
+    }
+
+    .main-wrapper {
+        min-height: 100vh;
+        background-color: #f8f8f8;
+    }
+
+    .content-container {
+        position: relative;
+        /* width: 50%; */
+        max-width: 600px;
+    }
+    .container {
+        display: none;
+        width: 50%;
+    }
+
+    .container.active {
+        display: block;
+    }
+
+    .arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 3rem;
+        cursor: pointer;
+        color: #0d6efd;
+        z-index: 10;
+    }
+
+    .arrow.left {
+        left: 240px;
+    }
+
+    .arrow.right {
+        right: 240px;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            width: 100%;
+        }
+        .container {
+            width: 100%;
+            padding: 10px;
+        }
+        .arrow {
+            font-size: 2rem;
+            left: 10px;
+            right: 10px;
+        }
+        .btn {
+            width: 100%; /* Кнопка занимает всю ширину на мобильных устройствах */
+            margin-top: 10px; /* Уменьшаем отступ */
+        }
+        
+    }
+
+</style>
+
+<script>
+    const data = {};
+    const levelBoxes = document.querySelectorAll('div[class^="level-box"]');
+    levelBoxes.forEach(box => {
+        box.addEventListener('click', async () => {
+            levelBoxes.forEach(b => b.classList.remove('selected'));
+            box.classList.add('selected');
+            data.learning_level = box.dataset.level;
+            const level_lang = box.dataset.level;
+            console.log(level_lang);
+        })
+    })
+    const wordBoxes = document.querySelectorAll('div[class="word-box"]');
+    wordBoxes.forEach(box => {
+        box.addEventListener('click', async () => {
+            wordBoxes.forEach(b => b.classList.remove('selected'));
+            box.classList.add('selected');
+            data.count_learn_words = box.dataset.words;
+            const count_words = box.dataset.words;
+            console.log(count_words)
+        })
+    })
+
+    document.getElementById('confirm-settings').addEventListener('click', async () => {
+        if (Object.keys(data).length < 2) {
+            Swal.fire({
+                    icon: 'warning',
+                    title: 'Вы забыли выбрать какие-то настройки',
+                    position: "top",
+                    timer: 3000,
+                    width: '27em',
+                    animation: true
+                });   
+        } else {
+            const result = await Swal.fire({
+                    icon: 'question',
+                    title: 'Вы хотите получать напоминание?',
+                    position: "top",
+                    width: '27em',
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Да',
+                    cancelButtonText: 'Нет'
+                })
+            if (result.isConfirmed) {
+                data.notification = true;
+            } else if (result.isDismissed) {
+                data.notification = false;
+            }
+
+            console.log(data);
+
+            try {
+                console.log(data);
+                const response = await fetch("/learni_config", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+
+                if (response.redirected) {
+                    window.location.replace(response.url);
+                } 
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    })
+
+
+    const languageContainer = document.getElementById('language-container');
+    const wordsContainer = document.getElementById('words-container');
+    const notifyContainer = document.getElementById('notification-container');
+    const leftArrow = document.getElementById('left-arrow');
+    const rightArrow = document.getElementById('right-arrow');
+
+    // Функция для переключения контейнеров
+    function switchTo(container) {
+        languageContainer.classList.toggle('active', container === 'language');
+        wordsContainer.classList.toggle('active', container === 'words');
+    }
+
+    // Обработчик для левой стрелки
+    leftArrow.addEventListener('click', () => {
+        switchTo('language');
+    });
+
+    // Обработчик для правой стрелки
+    rightArrow.addEventListener('click', () => {
+        switchTo('words');
+    });
+
+</script>
+{% endblock %}

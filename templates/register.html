@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %} Learni {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4" style="width: 400px; border-radius: 15px;">
+        <h2 class="text-center mb-4">Learni</h2>
+        <form action="/auth/register/" method="post" id="registerForm">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="user-name" class="form-label">Username</label>
+                <input type="text" class="form-control" id="user-name" name="username" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sign up</button>
+        </form>
+        <div class="mt-3 text-center">
+            <a href="/login/" class="text-decoration-none">Have an account? Sign in</a>
+        </div>
+    </div>
+</div>
+
+<!-- scripts -->
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordField = document.getElementById('password');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            this.innerHTML = '<i class="bi bi-eye-slash"></i>';
+        } 
+        else {
+            passwordField.type = 'password';
+            this.innerHTML = '<i class="bi bi-eye"></i>';
+        }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const data = {};
+
+        formData.forEach((value, key) => {
+            if (key === "password") {
+                data["hash_password"] = value;
+            }
+            else if (key === "username") {
+                data["username"] = value;
+            } 
+            else if (key === "email") {
+                data["email"] = value;
+            }
+            
+        });
+
+        console.log(data)
+
+        try {
+            const response = await fetch('/auth/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.redirected) {
+                window.location.replace(response.url);
+            } 
+            else if (response.status == 401) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email alredy exists',
+                    text: 'This email is already in use. Try to sign in.',
+                    position: "top",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: true,
+                    width: '27em',
+                });
+            }
+            else if (response.status == 422) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email is not correct',
+                    text: 'This email is not correct one. Try again.',
+                    position: "top",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: true,
+                    width: '27em',
+                });
+            }
+        } 
+        catch (error) {}
+    });
+</script>
+
+<!-- Style section -->
+<style>
+    .input-group > button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .input-group > input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }   
+</style>
+
+{% endblock %}

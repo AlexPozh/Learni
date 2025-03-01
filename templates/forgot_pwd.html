@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %} Learni {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card centered-form bg-light">
+        <h1 class="app-title">Learni</h1>
+
+        <form action="#" method="post" id="verificationForm">
+            <!-- Email field -->
+            <div class="mb-3" id="emailField">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <p class="form-text text-center" id="descriptionForEmail">Write your email that was registered in Learni.</p>
+            <!-- 'Get code' button -->
+            <div class="d-grid gap-2" id="getCodeButton">
+                <button type="submit" class="btn btn-primary" name="action" value="send_code">Get code</button>
+            </div>
+
+            <br>
+
+            <!-- Verification code field -->
+            <div class="mb-3 d-none" id="codeField">
+                <label for="verificationCode" class="form-label">Verification code</label>
+                <input type="text" class="form-control" id="verificationCode" name="verificationCode">
+            </div>
+            <p class="form-text text-center d-none" id="descriptionForCode">Insert a code here that was sent to the specified email.</p>
+            <!-- 'Submit code' button -->
+            <div class="d-grid gap-2 d-none" id="submitCodeButton">
+                <button type="submit" class="btn btn-primary" name="action" value="submit_code">Submit code</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Style section -->
+<style>
+    .centered-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .app-title {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .form-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .btn-disabled-custom {
+        background-color: #6c757d; /* Серый цвет */
+        border-color: #6c757d;
+        color: #fff; /* Белый текст */
+        cursor: not-allowed; /* Изменение курсора */
+        pointer-events: none; /* Отключение кликов */
+        border-radius: 0.375rem;
+        font-weight: 400;
+        font-size: 1rem;
+        padding: 0.375rem 0.75rem;
+    }
+</style>
+
+<script>
+    
+    document.getElementById("verificationForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        
+        const action = document.querySelector('button[type="submit"]:focus').value;
+
+        if (action == "send_code") {
+            let inputed_email = document.getElementById("email");
+            try {
+                if (inputed_email.value) {
+                    
+
+                    let response = await fetch("/send_code/", {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify({email: inputed_email.value})
+                    })
+
+                    if (response.status == 200) {
+                        let getCodeButton = document.getElementById("getCodeButton");
+                        getCodeButton.disabled = true;
+                        getCodeButton.classList.add('btn-disabled-custom');
+                        getCodeButton.classList.add('text-center');
+                        getCodeButton.textContent = 'Code sent';
+
+                        document.getElementById('codeField').classList.remove('d-none'); 
+                        document.getElementById('verificationCode').setAttribute('required', 'true');
+                        document.getElementById('descriptionForCode').classList.remove('d-none'); 
+                        document.getElementById('submitCodeButton').classList.remove('d-none');
+                    } else if (response.status == 401) {
+                        Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid email',
+                        text: 'There is no like this email in Learni system.',
+                        position: "top",
+                        timer: 4000,
+                        timerProgressBar: true,
+                        showConfirmButton: true,
+                        width: '27em',
+                        });
+                    } 
+                    else {
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong',
+                        text: 'Sorry, we have internal server error, try later.',
+                        position: "top",
+                        timer: 4500,
+                        timerProgressBar: true,
+                        showConfirmButton: true,
+                        width: '27em',
+                        });
+                        window.location.replace("/home/");
+                    }
+                }
+            }
+            catch (error) {console.log(error);}
+
+        } 
+        else if (action == "submit_code") {
+            let inputed_email = document.getElementById("email");
+            let inputed_code = document.getElementById('verificationCode');
+            if (inputed_code.value) {                
+                let response = await fetch("/confirm_code/", {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            email: inputed_email.value,
+                            code: inputed_code.value
+                        }
+                        )
+                    }
+                ) 
+
+                if (response.redirected) {
+                    window.location.replace(response.url);
+                    
+                } else if (response.status == 401) {
+                    Swal.fire(
+                        {
+                            icon: 'error',
+                            title: 'Wrong code',
+                            text: 'This code is wrong. Try again',
+                            position: "top",
+                            timer: 4500,
+                            timerProgressBar: true,
+                            showConfirmButton: true,
+                            width: '27em',
+                        }
+                    );
+                }
+            }    
+        }
+    }
+)
+</script>
+
+{% endblock %}
