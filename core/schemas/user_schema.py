@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class CreateUser(BaseModel):
@@ -11,14 +11,32 @@ class CreateUser(BaseModel):
     username: str | None = None
 
 
+class LoginUser(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    email: str
+    password: str
+
+
 class CreateUserDB(CreateUser):
     hash_password: bytes
     is_email_confirmed: bool = False
+
 
 class UserSchema(BaseModel):
     model_config = ConfigDict(strict=True)
 
     username: str
-    email: EmailStr
+    email: str
     is_email_confirmed: bool
     registered_at: date
+
+
+class NewPasswordScheme(BaseModel):
+    email: str
+    password: str
+
+
+class NewPasswordDB(BaseModel):
+    email: str
+    hash_password: bytes
