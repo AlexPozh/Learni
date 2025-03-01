@@ -8,3 +8,8 @@ class UserNotFound(HTTPException):
 class InvalidToken(HTTPException):
     def __init__(self, status_code = status.HTTP_401_UNAUTHORIZED, detail = "Invalid token value", headers = None):
         super().__init__(status_code, detail, headers)
+
+
+class UserAlreadyExists(HTTPException):
+    def __init__(self, status_code = status.HTTP_401_UNAUTHORIZED, detail = "This email is already in use", headers = None):
+        super().__init__(status_code, detail, headers)
